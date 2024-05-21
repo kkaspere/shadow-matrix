@@ -2,7 +2,7 @@
  * Functions that solves matrices multiplication with shadow problem
  * @author: Karolina Kasperek
  */
-
+#include <stdlib.h>
 /*********
  * structs
  *********/
@@ -13,7 +13,12 @@ typedef struct {
 } matrix_t;
 
 typedef struct {
-    float *data;
+    unsigned int col; /* column index of non-zero element */
+    struct shd_node *next;
+} shd_node;
+
+typedef struct {
+    shd_node **shd_data; /* each list of shd_node type corresponds to the specific row in the matrix (list 0 - row 0 and so on) */
 } shd_t;
 
 /***********
