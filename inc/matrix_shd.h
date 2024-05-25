@@ -60,3 +60,10 @@ int matrix_prodshd(const matrix_t *A, const matrix_t *B, const shd_t *shdA, shd_
  * Helper function that prints out the matrix contents
  */
 void print_matrix(const matrix_t A);
+
+/**
+ * Appends a new node to the linked list
+ * head_node - pointer to linked list head node
+ * data - data of the new node
+ */
+void append_node(shd_node **head_node, int data);
