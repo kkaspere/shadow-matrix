@@ -6,9 +6,12 @@ int main(void) {
     unsigned int rows = 3;
     unsigned int col = 3;
     const matrix_t test_matrix = {rows, col, data};
-    shd_t *shd = (shd_t*) malloc(sizeof(shd_t *));
-    matrix_getshd(&test_matrix, shd);
 
+    print_matrix(test_matrix);
+    shd_t *shd = (shd_t*) malloc(sizeof(shd_t *));
+    int coverage = matrix_getshd(&test_matrix, shd);
+
+    /** Prints out list of lists **/
     for (int i = 0; i <  test_matrix.rows; i++) {
         shd_node *ptr = shd->shd_data[i];
         printf("list %d: ", i);

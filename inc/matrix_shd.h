@@ -3,6 +3,8 @@
  * @author: Karolina Kasperek
  */
 #include <stdlib.h>
+#include <stdio.h>
+
 /*********
  * structs
  *********/
@@ -54,3 +56,7 @@ int matrix_prodshd(const matrix_t *A, const matrix_t *B, const shd_t *shdA, shd_
  * helper functions
  ******************/
 
+/**
+ * Helper function that prints out the matrix contents
+ */
+void print_matrix(const matrix_t A);
