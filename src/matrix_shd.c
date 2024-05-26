@@ -6,22 +6,32 @@
 
 int matrix_getshd(const matrix_t *A, shd_t *shd) {
 
-    shd->shd_data = (shd_node **) malloc(A->rows * sizeof(shd_node *));
-    for (int i = 0; i < A->rows; i++)
-        shd->shd_data[i] = NULL;
+    const unsigned int elements_num = A->rows * A->cols; /** number of elements in matrix **/
+    int coverage;                                        /** stores the matrix coverage (in %) **/
+    unsigned int nonzero_num = 0;                        /** stores number of non-zero elements in matrix **/
+    unsigned int idx;                                    /** stores index of currently processing element **/
 
-    /** Filling up the lists **/
+    /** Filling up the list for each row **/
+    shd->shd_data = (shd_node **) malloc(A->rows * sizeof(shd_node *));
     for (int row = 0; row < A->rows; row++) {
         shd_node *list = NULL;
         for (int col = 0; col < A->cols; col++) {
-            int idx = row * A->cols + col;
+            idx = row * A->cols + col;
             if (A->data[idx] > 0) {
+                nonzero_num += 1;
                 append_node(&list, col);
             }
             shd->shd_data[row] = list;
         }
     }
-    return 0;
+
+    /** Coverage calculation **/
+    if (nonzero_num == 0)
+        coverage = -1;
+    else
+        coverage = (nonzero_num*100)/elements_num;
+
+    return coverage;
 }
 
 int matrix_prodshd(const matrix_t *A, const matrix_t *B, const shd_t *shdA, shd_t *shdB, matrix_t *C) {

@@ -2,7 +2,7 @@
 #include "matrix_shd.h"
 
 int main(void) {
-    float data_A[] = {0, 4.4, 0, 0, 0, 7.8, 9.9, 0, 1.2, 3, 3, 3};
+    float data_A[] = {0, 4.4, 0, 0, 0, 0, 9.9, 3, 1.2, 0, 3, 0};
     unsigned int rows_A = 4;
     unsigned int col_A = 3;
 
@@ -21,7 +21,8 @@ int main(void) {
 
     int coverageA = matrix_getshd(&test_matrix_A, shd_A);
     int coverageB = matrix_getshd(&test_matrix_B, shd_B);
-
+    printf("Coverage A: %d\n", coverageA);
+    printf("Coverage B: %d\n", coverageB);
     /** Prints out list of lists **/
     printf("LIST A\n");
     for (int i = 0; i <  test_matrix_A.rows; i++) {
