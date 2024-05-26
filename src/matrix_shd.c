@@ -34,37 +34,19 @@ int matrix_getshd(const matrix_t *A, shd_t *shd) {
     return coverage;
 }
 
-int matrix_prodshd(const matrix_t *A, const matrix_t *B, const shd_t *shdA, shd_t *shdB, matrix_t *C) {
+int matrix_prodshd(const matrix_t *A, const matrix_t *B, const shd_t *shdA, const shd_t *shdB, matrix_t *C) {
 
     /** checking if matrix dim are compatible **/
     if (A -> cols != B -> rows)
         return -1;
-    C->rows = A->rows;
-    C->cols = B->cols;
-    C->data = calloc(C->rows*C->cols, sizeof(float));
-    if (shdA == NULL || shdB == NULL)
+
+    if (shdA == NULL || shdB == NULL) {
         // do naive multiplication
         printf("Naive mult\n");
-    else {
-        // multiplication with shadow
-        for (int i=0; i < A-> rows; i++) {
-            shd_node *ptrA = shdA->shd_data[i];
-            printf("idx: %d\n", i);
-            while(ptrA != NULL){
-                shd_node *ptrB = shdB->shd_data[ptrA->col];
-                while(ptrB!=NULL){
-                    float val1=A->data[i*A->cols + ptrA->col];
-                    float val2 =B->data[ptrA->col*B->cols + ptrB->col];
-                    int idx_row = i;
-                    int idx_col = ptrB -> col;
-                    printf("c[%d][%d] += %.2f * %.2f\n", idx_row, idx_col, val1, val2);
-                    C->data[i*C->cols + ptrB -> col] +=  val1*val2 ;
-                    ptrB = ptrB -> next;
-                }
-                ptrA = ptrA->next;
-            }
-        }
+        *C = mult_matrix_naive(A, B);
     }
+    else
+        mult_matrix_with_shd(A, B, shdA, shdB, C);
     return 0;
 }
 
@@ -82,3 +64,51 @@ void append_node(shd_node **head_node, int data) {
     new_node->next = *head_node;
     *head_node = new_node;
 }
+
+matrix_t mult_matrix_naive(const matrix_t *A, const matrix_t *B) {
+    //matrix_t *C = (matrix_t*) malloc(sizeof(matrix_t));
+    matrix_t C;
+    C.rows = A->rows;
+    C.cols = B->cols;
+    C.data = calloc(C.rows*C.cols, sizeof(float));
+    C.data[1] = 4;
+    return C;
+}
+
+void mult_matrix_with_shd(const matrix_t *A, const matrix_t *B, const shd_t *shdA, const shd_t *shdB, matrix_t *C) {
+
+    unsigned int idx_A;
+    unsigned int idx_B;
+    unsigned int idx_C;
+    float val_A;
+    float val_B;
+
+    /** Initialize output matrix **/
+    C->rows = A->rows;
+    C->cols = B->cols;
+    C->data = calloc(C->rows * C->cols, sizeof(float));
+
+    for (int row=0; row < A-> rows; row++) {
+        shd_node *ptrA = shdA->shd_data[row];
+        // Debug
+        printf("idx: %d\n", row);
+        while(ptrA != NULL){
+            shd_node *ptrB = shdB->shd_data[ptrA->col];
+            while(ptrB!=NULL){
+                idx_A = row*A->cols + ptrA->col;
+                idx_B = ptrA->col*B->cols + ptrB->col;
+                idx_C = row*C->cols + ptrB -> col;
+                val_A = A->data[idx_A];
+                val_B = B->data[idx_B];
+                int idx_row = row;
+                int idx_col = ptrB -> col;
+                // Debug
+                printf("c[%d][%d] += %.2f * %.2f\n", idx_row, idx_col, val_A, val_B);
+                C->data[idx_C] +=  val_A * val_B;
+                ptrB = ptrB -> next;
+            }
+            ptrA = ptrA->next;
+        }
+    }
+}
+

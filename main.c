@@ -47,7 +47,7 @@ int main(void) {
 
     printf("====\n");
     matrix_prodshd(&test_matrix_A, &test_matrix_B,  shd_A,  shd_B, output_matrix);
-
+    //matrix_prodshd(&test_matrix_A, &test_matrix_B,  NULL,  NULL, output_matrix);
     printf("Output matrix:\n");
     print_matrix(*output_matrix);
     return 0;
