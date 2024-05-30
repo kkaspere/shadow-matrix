@@ -32,6 +32,7 @@ static void check_multiplication_shd(void **state) {
 
     assert_int_equal(mult_res, teststate->mult_result_ref);
 
+    /** If multiplication was successful, check contents of output matrix**/
     if (mult_res == 0) {
 
         assert_int_equal(output_shd->rows, teststate->matrix_C_ref->rows);
@@ -61,6 +62,7 @@ static void check_multiplication_naive(void **state) {
 
     assert_int_equal(mult_res, teststate->mult_result_ref);
 
+    /** If multiplication was successful, check contents of output matrix**/
     if (mult_res == 0) {
 
         assert_int_equal(output_naive->rows, teststate->matrix_C_ref->rows);
@@ -86,18 +88,26 @@ static void check_multiplication_consiscency(void **state) {
     teststate->matrix_C_naive = output_naive;
     teststate->matrix_C_shd = output_shd;
 
+    unsigned int output_rows_num = teststate->matrix_C_ref->rows;
+    unsigned int output_cols_num = teststate->matrix_C_ref->cols;
+
     mult_shd_res = matrix_prodshd(teststate->matrix_A, teststate->matrix_B, teststate->shd_A_ref, teststate->shd_B_ref,
                                   output_shd);
+
     mult_naive_res = matrix_prodshd(teststate->matrix_A, teststate->matrix_B, NULL, NULL, output_naive);
+
     assert_int_equal(mult_shd_res, mult_naive_res);
-    if (mult_shd_res == 0) {
+
+    /** If multiplications was successful, check if both output matrices has consistent contents **/
+    if (mult_shd_res == 0 && mult_naive_res == 0) {
+
         assert_int_equal(output_shd->rows, output_naive->rows);
         assert_int_equal(output_shd->cols, output_naive->cols);
 
-        for (int row = 0; row < output_shd->rows; row++) {
-            for (int col = 0; col < output_shd->cols; col++) {
-                assert_float_equal(output_shd->data[row * output_shd->cols + col],
-                                   output_naive->data[row * output_naive->cols + col], 1e-6);
+        for (int row = 0; row < output_rows_num; row++) {
+            for (int col = 0; col < output_cols_num; col++) {
+                assert_float_equal(output_shd->data[row * output_cols_num + col],
+                                   output_naive->data[row * output_cols_num + col], 1e-6);
             }
         }
     }
@@ -171,8 +181,37 @@ static int mult_naive_teardown(void **state) {
 static int mult_consiscency_teardown(void **state) {
 
     mult_teststate_t *teststate = *state;
+
+    shd_node *head;
+    shd_node *head_tmp;
+
+    for (int row = 0; row < teststate->matrix_A->rows; row++) {
+        head = teststate->shd_A_ref->shd_data[row];
+        while (head != NULL) {
+            head_tmp = head;
+            head = head->next;
+            free(head_tmp);
+        }
+    }
+
+    for (int row = 0; row < teststate->matrix_B->rows; row++) {
+        head = teststate->shd_B_ref->shd_data[row];
+        while (head != NULL) {
+            head_tmp = head;
+            head = head->next;
+            free(head_tmp);
+        }
+    }
+
+    free(teststate->shd_A_ref->shd_data);
+    free(teststate->shd_A_ref);
+
+    free(teststate->shd_B_ref->shd_data);
+    free(teststate->shd_B_ref);
+
     free(teststate->matrix_C_shd->data);
     free(teststate->matrix_C_naive->data);
+
     free(teststate->matrix_C_shd);
     free(teststate->matrix_C_naive);
     free(teststate);
@@ -241,7 +280,6 @@ int main(void) {
     teststate_shd0->shd_A_ref->shd_data[2] = shd0_row2_A;
     teststate_shd0->shd_A_ref->shd_data[3] = shd0_row3_A;
 
-
     teststate_shd0->shd_B_ref->shd_data = malloc(test_matrix_1B.rows * sizeof(shd_node *));
     shd_node *shd0_row0_B = NULL;
     shd_node *shd0_row1_B = NULL;
@@ -268,18 +306,51 @@ int main(void) {
     teststate_naive0->mult_result_ref = mult_results_expected[0];
     teststate_naive0->matrix_C_ref = &matrices_result_ref[0];
 
-
     /**
      * multiplication consiscency data
      */
-    /* mult_teststate_t *teststate1 = calloc(1, sizeof(mult_teststate_t));
-     mult_teststate_t *teststate2 = calloc(1, sizeof(mult_teststate_t));
+    mult_teststate_t *teststate_c0 = calloc(1, sizeof(mult_teststate_t));
 
-     teststate1->matrix_A = &test_matrix_1A;
-     teststate1->matrix_B = &test_matrix_1B;
+    teststate_c0->matrix_A = &test_matrix_1A;
+    teststate_c0->matrix_B = &test_matrix_1B;
+    teststate_c0->shd_A_ref = malloc(sizeof(shd_t));
+    teststate_c0->shd_B_ref = malloc(sizeof(shd_t));
 
-     teststate2->matrix_B = &test_matrix_1B;
-     teststate2->matrix_A = &test_matrix_1A;*/
+    teststate_c0->shd_A_ref->shd_data = malloc(test_matrix_1A.rows * sizeof(shd_node *));
+    shd_node *c0_row0_A = NULL;
+    shd_node *c0_row1_A = NULL;
+    shd_node *c0_row2_A = NULL;
+    shd_node *c0_row3_A = NULL;
+
+    append_node(&c0_row0_A, 1);
+
+    append_node(&c0_row2_A, 0);
+    append_node(&c0_row2_A, 1);
+    append_node(&c0_row2_A, 2);
+
+    append_node(&c0_row3_A, 1);
+
+    teststate_c0->shd_A_ref->shd_data[0] = c0_row0_A;
+    teststate_c0->shd_A_ref->shd_data[1] = c0_row1_A;
+    teststate_c0->shd_A_ref->shd_data[2] = c0_row2_A;
+    teststate_c0->shd_A_ref->shd_data[3] = c0_row3_A;
+
+    teststate_c0->shd_B_ref->shd_data = malloc(test_matrix_1B.rows * sizeof(shd_node *));
+    shd_node *c0_row0_B = NULL;
+    shd_node *c0_row1_B = NULL;
+    shd_node *c0_row2_B = NULL;
+
+    append_node(&c0_row0_B, 0);
+
+    append_node(&c0_row2_B, 1);
+
+    teststate_c0->shd_B_ref->shd_data[0] = c0_row0_B;
+    teststate_c0->shd_B_ref->shd_data[1] = c0_row1_B;
+    teststate_c0->shd_B_ref->shd_data[2] = c0_row2_B;
+
+    teststate_c0->mult_result_ref = mult_results_expected[0];
+    teststate_c0->matrix_C_ref = &matrices_result_ref[0];
+
     const struct CMUnitTest tests[] = {
 
             /** Coverage and shadow **/
@@ -296,11 +367,8 @@ int main(void) {
             cmocka_unit_test_prestate_setup_teardown(check_multiplication_naive, test_setup, mult_naive_teardown,
                                                      teststate_naive0),
             /** Consiscency mult check **/
-            // cmocka_unit_test_setup_teardown(check_multiplication_consiscency, setup, teardown)
-            // cmocka_unit_test_prestate_setup_teardown(check_multiplication_consiscency, test_setup,
-            //                                         mult_consiscency_teardown, teststate1),
-            // cmocka_unit_test_prestate_setup_teardown(check_multiplication_consiscency, test_setup,
-            //                                        mult_consiscency_teardown, teststate2)
+            cmocka_unit_test_prestate_setup_teardown(check_multiplication_consiscency, test_setup,
+                                                     mult_consiscency_teardown, teststate_c0),
     };
     return cmocka_run_group_tests(tests, NULL, NULL);
 }
