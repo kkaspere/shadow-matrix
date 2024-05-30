@@ -18,10 +18,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install cmocka
+      - name: Install cmocka and valgrind
         run: |
           sudo apt-get update
           sudo apt-get -y install libcmocka-dev
+          sudo apt-get -y install valgrind
 
       - name: Configure CMake
         # Configure CMake in a 'build' subdirectory. `CMAKE_BUILD_TYPE` is only required if you are using a single-configuration generator such as make.
@@ -37,3 +38,8 @@ jobs:
         run: |
           cd ${{github.workspace}}/build
           ctest -V
+
+      - name: Valgrind check
+      # Build your program with the given configuration
+        run: |
+          valgrind ./bin/shadow_matrix_test         
