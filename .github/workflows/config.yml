@@ -34,12 +34,15 @@ jobs:
         run: cmake --build ${{github.workspace}}/build
 
       - name: Test
-        # Build your program with the given configuration
         run: |
           cd ${{github.workspace}}/build
           ctest -V
 
       - name: Valgrind check
-      # Build your program with the given configuration
         run: |
-          valgrind ./bin/shadow_matrix_test         
+          valgrind ./bin/shadow_matrix_test
+
+      - name: Run demo
+        # Build your program with the given configuration
+        run: |
+          ./bin/shadow_matrix          
