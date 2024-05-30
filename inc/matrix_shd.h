@@ -69,6 +69,12 @@ void print_matrix(const matrix_t A);
 void append_node(shd_node **head_node, int data);
 
 /**
+ * Free the linked list
+ * head_node - pointer to linked list head node
+ */
+void free_list(shd_node *head_node);
+
+/**
  * Implementation of naive matrix multiplication (from the formula)
  * C = AB
  * Returns 0 on multiplication success,

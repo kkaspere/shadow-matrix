@@ -1,3 +1,6 @@
+/**
+ * @author: Karolina Kasperek
+ */
 
 #include <stdarg.h>
 #include <stddef.h>
@@ -119,14 +122,9 @@ static int coverage_teardown(void **state) {
     shd_node *head;
     shd_node *head_tmp;
 
-    for (int row = 0; row < teststate->matrix_A->rows; row++) {
-        head = teststate->shd_A->shd_data[row];
-        while (head != NULL) {
-            head_tmp = head;
-            head = head->next;
-            free(head_tmp);
-        }
-    }
+    for (int row = 0; row < teststate->matrix_A->rows; row++)
+        free_list(teststate->shd_A->shd_data[row]);
+
     free(teststate->shd_A->shd_data);
     free(teststate->shd_A);
     free(teststate);
@@ -139,23 +137,12 @@ static int mult_shd_teardown(void **state) {
     shd_node *head;
     shd_node *head_tmp;
 
-    for (int row = 0; row < teststate->matrix_A->rows; row++) {
-        head = teststate->shd_A_ref->shd_data[row];
-        while (head != NULL) {
-            head_tmp = head;
-            head = head->next;
-            free(head_tmp);
-        }
-    }
+    for (int row = 0; row < teststate->matrix_A->rows; row++)
+        free_list(teststate->shd_A_ref->shd_data[row]);
 
-    for (int row = 0; row < teststate->matrix_B->rows; row++) {
-        head = teststate->shd_B_ref->shd_data[row];
-        while (head != NULL) {
-            head_tmp = head;
-            head = head->next;
-            free(head_tmp);
-        }
-    }
+    for (int row = 0; row < teststate->matrix_B->rows; row++)
+        free_list(teststate->shd_B_ref->shd_data[row]);
+
     free(teststate->shd_A_ref->shd_data);
     free(teststate->shd_A_ref);
 
@@ -182,26 +169,11 @@ static int mult_consiscency_teardown(void **state) {
 
     mult_teststate_t *teststate = *state;
 
-    shd_node *head;
-    shd_node *head_tmp;
+    for (int row = 0; row < teststate->matrix_A->rows; row++)
+        free_list(teststate->shd_A_ref->shd_data[row]);
 
-    for (int row = 0; row < teststate->matrix_A->rows; row++) {
-        head = teststate->shd_A_ref->shd_data[row];
-        while (head != NULL) {
-            head_tmp = head;
-            head = head->next;
-            free(head_tmp);
-        }
-    }
-
-    for (int row = 0; row < teststate->matrix_B->rows; row++) {
-        head = teststate->shd_B_ref->shd_data[row];
-        while (head != NULL) {
-            head_tmp = head;
-            head = head->next;
-            free(head_tmp);
-        }
-    }
+    for (int row = 0; row < teststate->matrix_B->rows; row++)
+        free_list(teststate->shd_B_ref->shd_data[row]);
 
     free(teststate->shd_A_ref->shd_data);
     free(teststate->shd_A_ref);
