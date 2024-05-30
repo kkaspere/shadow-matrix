@@ -42,30 +42,6 @@ int matrix_prodshd(const matrix_t *A, const matrix_t *B, const shd_t *shdA, cons
         return mult_matrix_with_shd(A, B, shdA, shdB, C);
 }
 
-void print_matrix(const matrix_t A) {
-    for (int i = 0; i < A.rows; i++) {
-        for (int j = 0; j < A.cols; j++)
-            printf("%f ", A.data[i * A.cols + j]);
-        printf("\n");
-    }
-}
-
-void append_node(shd_node **head_node, int data) {
-    shd_node *new_node = (shd_node *) malloc(sizeof(shd_node));
-    new_node->col = data;
-    new_node->next = *head_node;
-    *head_node = new_node;
-}
-
-void free_list(shd_node *head_node) {
-    shd_node *head_tmp;
-    while (head_node != NULL) {
-        head_tmp = head_node;
-        head_node = head_node->next;
-        free(head_tmp);
-    }
-}
-
 int mult_matrix_naive(const matrix_t *A, const matrix_t *B, matrix_t *C) {
 
     /** checking if matrix dim are compatible **/
@@ -141,4 +117,28 @@ int mult_matrix_with_shd(const matrix_t *A, const matrix_t *B, const shd_t *shdA
         }
     }
     return 0;
+}
+
+void print_matrix(const matrix_t A) {
+    for (int i = 0; i < A.rows; i++) {
+        for (int j = 0; j < A.cols; j++)
+            printf("%f ", A.data[i * A.cols + j]);
+        printf("\n");
+    }
+}
+
+void append_node(shd_node **head_node, int data) {
+    shd_node *new_node = (shd_node *) malloc(sizeof(shd_node));
+    new_node->col = data;
+    new_node->next = *head_node;
+    *head_node = new_node;
+}
+
+void free_list(shd_node *head_node) {
+    shd_node *head_tmp;
+    while (head_node != NULL) {
+        head_tmp = head_node;
+        head_node = head_node->next;
+        free(head_tmp);
+    }
 }

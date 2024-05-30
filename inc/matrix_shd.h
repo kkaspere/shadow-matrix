@@ -52,6 +52,22 @@ int matrix_getshd(const matrix_t *A, shd_t *shd);
 */
 int matrix_prodshd(const matrix_t *A, const matrix_t *B, const shd_t *shdA, const shd_t *shdB, matrix_t *C);
 
+/**
+ * Implementation of naive matrix multiplication (from the formula)
+ * C = AB
+ * Returns 0 on multiplication success,
+ * or -1 on multiplication failure.
+ */
+int mult_matrix_naive(const matrix_t *A,  const matrix_t *B, matrix_t *C);
+
+/**
+ * Implementation of matrix multiplication with its shadow
+ * C = AB
+ * Returns 0 on multiplication success,
+ * or -1 on multiplication failure.
+ */
+int mult_matrix_with_shd(const matrix_t *A, const matrix_t *B, const shd_t *shdA, const shd_t *shdB, matrix_t *C);
+
 /******************
  * helper functions
  ******************/
@@ -73,19 +89,3 @@ void append_node(shd_node **head_node, int data);
  * head_node - pointer to linked list head node
  */
 void free_list(shd_node *head_node);
-
-/**
- * Implementation of naive matrix multiplication (from the formula)
- * C = AB
- * Returns 0 on multiplication success,
- * or -1 on multiplication failure.
- */
-int mult_matrix_naive(const matrix_t *A,  const matrix_t *B, matrix_t *C);
-
-/**
- * Implementation of matrix multiplication with its shadow
- * C = AB
- * Returns 0 on multiplication success,
- * or -1 on multiplication failure.
- */
-int mult_matrix_with_shd(const matrix_t *A, const matrix_t *B, const shd_t *shdA, const shd_t *shdB, matrix_t *C);
