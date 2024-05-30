@@ -7,16 +7,48 @@
 #include <setjmp.h>
 #include <stdint.h>
 #include <cmocka.h>
+#include <stdbool.h>
+
 #include "matrix_shd.h"
 #include "test.h"
 
-static void check_coverage(void **state) {
+static void check_coverage_and_shd(void **state) {
+
     mult_teststate_t *teststate = *state;
+    unsigned int matrix_rows_num = teststate->matrix_A->rows;
+
+    shd_node *shd_calc_node;
+    shd_node *shd_ref_node;
+
     assert_int_equal(matrix_getshd(teststate->matrix_A, teststate->shd_A), teststate->coverage_ref);
-}
 
-static void check_matrix_shadow(void **state) {
+    bool flag_found = false;
+    /** In case of matrix has a positive coverage value, check shadow contents **/
+    if (teststate->coverage_ref > 0) {
+        for (int row = 0; row < matrix_rows_num; row++) {
 
+            /** head of the calculated linked list corresponding to currently checked row **/
+            shd_calc_node = teststate->shd_A->shd_data[row];
+
+            while (shd_calc_node != NULL) {
+                /** head of the reference linked list corresponding to currently checked row **/
+                shd_ref_node = teststate->shd_A_ref->shd_data[row];
+                flag_found = false;
+
+                /** Iterating through nodes of reference list to check if calculated node is there **/
+                while (shd_ref_node != NULL) {
+                    /** Calculated node found in reference list **/
+                    if (shd_ref_node->col == shd_ref_node->col) {
+                        flag_found = true;
+                        break;
+                    }
+                    shd_ref_node = shd_ref_node->next;
+                }
+                assert_true(flag_found);
+                shd_calc_node = shd_calc_node->next;
+            }
+        }
+    }
 }
 
 static void check_multiplication_shd(void **state) {
@@ -122,8 +154,13 @@ static int coverage_teardown(void **state) {
     shd_node *head;
     shd_node *head_tmp;
 
-    for (int row = 0; row < teststate->matrix_A->rows; row++)
+    for (int row = 0; row < teststate->matrix_A->rows; row++) {
         free_list(teststate->shd_A->shd_data[row]);
+        free_list(teststate->shd_A_ref->shd_data[row]);
+    }
+
+    free(teststate->shd_A_ref->shd_data);
+    free(teststate->shd_A_ref);
 
     free(teststate->shd_A->shd_data);
     free(teststate->shd_A);
@@ -204,25 +241,89 @@ int main(void) {
     teststate_cov0->matrix_A = &test_matrix_1;
     teststate_cov0->coverage_ref = coverage_expected[0];
 
+    teststate_cov0->shd_A_ref = malloc(sizeof(shd_t));
+    teststate_cov0->shd_A_ref->shd_data = malloc(test_matrix_1.rows * sizeof(shd_node *));
+
+    shd_node *cov0_row0_A = NULL;
+    shd_node *cov0_row1_A = NULL;
+    shd_node *cov0_row2_A = NULL;
+    shd_node *cov0_row3_A = NULL;
+
+    append_node(&cov0_row0_A, 1);
+
+    append_node(&cov0_row2_A, 0);
+    append_node(&cov0_row2_A, 1);
+    append_node(&cov0_row2_A, 2);
+
+    append_node(&cov0_row3_A, 1);
+
+    teststate_cov0->shd_A_ref->shd_data[0] = cov0_row0_A;
+    teststate_cov0->shd_A_ref->shd_data[1] = cov0_row1_A;
+    teststate_cov0->shd_A_ref->shd_data[2] = cov0_row2_A;
+    teststate_cov0->shd_A_ref->shd_data[3] = cov0_row3_A;
+
     mult_teststate_t *teststate_cov1 = calloc(1, sizeof(mult_teststate_t));
     teststate_cov1->shd_A = malloc(sizeof(shd_t));
     teststate_cov1->matrix_A = &test_matrix_2;
     teststate_cov1->coverage_ref = coverage_expected[1];
+
+    teststate_cov1->shd_A_ref = malloc(sizeof(shd_t));
+    teststate_cov1->shd_A_ref->shd_data = malloc(test_matrix_2.rows * sizeof(shd_node *));
+
+    shd_node *cov1_row0_A = NULL;
+    shd_node *cov1_row1_A = NULL;
+    shd_node *cov1_row2_A = NULL;
+
+    append_node(&cov1_row0_A, 0);
+    append_node(&cov1_row0_A, 1);
+
+    append_node(&cov1_row1_A, 0);
+
+    teststate_cov1->shd_A_ref->shd_data[0] = cov1_row0_A;
+    teststate_cov1->shd_A_ref->shd_data[1] = cov1_row1_A;
+    teststate_cov1->shd_A_ref->shd_data[2] = cov1_row2_A;
 
     mult_teststate_t *teststate_cov2 = calloc(1, sizeof(mult_teststate_t));
     teststate_cov2->shd_A = malloc(sizeof(shd_t));
     teststate_cov2->matrix_A = &test_matrix_3;
     teststate_cov2->coverage_ref = coverage_expected[2];
 
+    teststate_cov2->shd_A_ref = malloc(sizeof(shd_t));
+    teststate_cov2->shd_A_ref->shd_data = malloc(test_matrix_3.rows * sizeof(shd_node *));
+
+
     mult_teststate_t *teststate_cov3 = calloc(1, sizeof(mult_teststate_t));
     teststate_cov3->shd_A = malloc(sizeof(shd_t));
     teststate_cov3->matrix_A = &test_matrix_4;
     teststate_cov3->coverage_ref = coverage_expected[3];
 
+    teststate_cov3->shd_A_ref = malloc(sizeof(shd_t));
+    teststate_cov3->shd_A_ref->shd_data = malloc(test_matrix_4.rows * sizeof(shd_node *));
+
+    shd_node *cov3_row0_A = NULL;
+    shd_node *cov3_row1_A = NULL;
+    shd_node *cov3_row2_A = NULL;
+    shd_node *cov3_row3_A = NULL;
+    shd_node *cov3_row4_A = NULL;
+
+    append_node(&cov3_row1_A, 0);
+    append_node(&cov3_row1_A, 3);
+
+    append_node(&cov3_row3_A, 2);
+
+    teststate_cov3->shd_A_ref->shd_data[0] = cov3_row0_A;
+    teststate_cov3->shd_A_ref->shd_data[1] = cov3_row1_A;
+    teststate_cov3->shd_A_ref->shd_data[2] = cov3_row2_A;
+    teststate_cov3->shd_A_ref->shd_data[3] = cov3_row3_A;
+    teststate_cov3->shd_A_ref->shd_data[4] = cov3_row4_A;
+
     mult_teststate_t *teststate_cov4 = calloc(1, sizeof(mult_teststate_t));
     teststate_cov4->shd_A = malloc(sizeof(shd_t));
     teststate_cov4->matrix_A = &test_matrix_5;
     teststate_cov4->coverage_ref = coverage_expected[4];
+
+    teststate_cov4->shd_A_ref = malloc(sizeof(shd_t));
+    teststate_cov4->shd_A_ref->shd_data = malloc(test_matrix_5.rows * sizeof(shd_node *));
     /**
      * multiplication with shd data
      */
@@ -326,11 +427,16 @@ int main(void) {
     const struct CMUnitTest tests[] = {
 
             /** Coverage and shadow **/
-            cmocka_unit_test_prestate_setup_teardown(check_coverage, test_setup, coverage_teardown, teststate_cov0),
-            cmocka_unit_test_prestate_setup_teardown(check_coverage, test_setup, coverage_teardown, teststate_cov1),
-            cmocka_unit_test_prestate_setup_teardown(check_coverage, test_setup, coverage_teardown, teststate_cov2),
-            cmocka_unit_test_prestate_setup_teardown(check_coverage, test_setup, coverage_teardown, teststate_cov3),
-            cmocka_unit_test_prestate_setup_teardown(check_coverage, test_setup, coverage_teardown, teststate_cov4),
+            cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, test_setup, coverage_teardown,
+                                                     teststate_cov0),
+            cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, test_setup, coverage_teardown,
+                                                     teststate_cov1),
+            cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, test_setup, coverage_teardown,
+                                                     teststate_cov2),
+            cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, test_setup, coverage_teardown,
+                                                     teststate_cov3),
+            cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, test_setup, coverage_teardown,
+                                                     teststate_cov4),
 
             /** Mult: naive and with shadow **/
             cmocka_unit_test_prestate_setup_teardown(check_multiplication_shd, test_setup, mult_shd_teardown,
