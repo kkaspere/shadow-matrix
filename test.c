@@ -67,7 +67,7 @@ static void check_multiplication_shd(void **state) {
 
     assert_int_equal(mult_res, teststate->mult_result_ref);
 
-    /** If multiplication was successful, check contents of output matrix**/
+    /** If multiplication was successful, check contents of output matrix **/
     if (mult_res == 0) {
 
         assert_int_equal(output_shd->rows, teststate->matrix_C_ref->rows);
@@ -232,18 +232,24 @@ static int test_setup(void **state) {
     return 0;
 }
 
-int main(void) {
+mult_teststate_t **get_cov_shd_data(unsigned int cases_num, const matrix_t test_matrices[], const int coverage_ref[]) {
+
+    mult_teststate_t **teststates = malloc(cases_num * sizeof(mult_teststate_t *));
+
+    for (int c = 0; c < cases_num; c++) {
+        teststates[c] = calloc(1, sizeof(mult_teststate_t));
+        teststates[c]->shd_A = malloc(sizeof(shd_t));
+        teststates[c]->matrix_A = &test_matrices[c];
+        teststates[c]->coverage_ref = coverage_ref[c];
+        teststates[c]->shd_A_ref = malloc(sizeof(shd_t));
+        teststates[c]->shd_A_ref->shd_data = malloc(test_matrices[c].rows * sizeof(shd_node *));
+    }
+
     /**
-     * coverage data
+     * manually fillup reference shd data contents
      */
-    mult_teststate_t *teststate_cov0 = calloc(1, sizeof(mult_teststate_t));
-    teststate_cov0->shd_A = malloc(sizeof(shd_t));
-    teststate_cov0->matrix_A = &test_matrix_1;
-    teststate_cov0->coverage_ref = coverage_expected[0];
 
-    teststate_cov0->shd_A_ref = malloc(sizeof(shd_t));
-    teststate_cov0->shd_A_ref->shd_data = malloc(test_matrix_1.rows * sizeof(shd_node *));
-
+    /** 0 teststate **/
     shd_node *cov0_row0_A = NULL;
     shd_node *cov0_row1_A = NULL;
     shd_node *cov0_row2_A = NULL;
@@ -257,19 +263,12 @@ int main(void) {
 
     append_node(&cov0_row3_A, 1);
 
-    teststate_cov0->shd_A_ref->shd_data[0] = cov0_row0_A;
-    teststate_cov0->shd_A_ref->shd_data[1] = cov0_row1_A;
-    teststate_cov0->shd_A_ref->shd_data[2] = cov0_row2_A;
-    teststate_cov0->shd_A_ref->shd_data[3] = cov0_row3_A;
+    teststates[0]->shd_A_ref->shd_data[0] = cov0_row0_A;
+    teststates[0]->shd_A_ref->shd_data[1] = cov0_row1_A;
+    teststates[0]->shd_A_ref->shd_data[2] = cov0_row2_A;
+    teststates[0]->shd_A_ref->shd_data[3] = cov0_row3_A;
 
-    mult_teststate_t *teststate_cov1 = calloc(1, sizeof(mult_teststate_t));
-    teststate_cov1->shd_A = malloc(sizeof(shd_t));
-    teststate_cov1->matrix_A = &test_matrix_2;
-    teststate_cov1->coverage_ref = coverage_expected[1];
-
-    teststate_cov1->shd_A_ref = malloc(sizeof(shd_t));
-    teststate_cov1->shd_A_ref->shd_data = malloc(test_matrix_2.rows * sizeof(shd_node *));
-
+    /** 1 teststate **/
     shd_node *cov1_row0_A = NULL;
     shd_node *cov1_row1_A = NULL;
     shd_node *cov1_row2_A = NULL;
@@ -279,27 +278,14 @@ int main(void) {
 
     append_node(&cov1_row1_A, 0);
 
-    teststate_cov1->shd_A_ref->shd_data[0] = cov1_row0_A;
-    teststate_cov1->shd_A_ref->shd_data[1] = cov1_row1_A;
-    teststate_cov1->shd_A_ref->shd_data[2] = cov1_row2_A;
+    teststates[1]->shd_A_ref->shd_data[0] = cov1_row0_A;
+    teststates[1]->shd_A_ref->shd_data[1] = cov1_row1_A;
+    teststates[1]->shd_A_ref->shd_data[2] = cov1_row2_A;
 
-    mult_teststate_t *teststate_cov2 = calloc(1, sizeof(mult_teststate_t));
-    teststate_cov2->shd_A = malloc(sizeof(shd_t));
-    teststate_cov2->matrix_A = &test_matrix_3;
-    teststate_cov2->coverage_ref = coverage_expected[2];
+    /** 2 teststate **/
+    // empty shadow
 
-    teststate_cov2->shd_A_ref = malloc(sizeof(shd_t));
-    teststate_cov2->shd_A_ref->shd_data = malloc(test_matrix_3.rows * sizeof(shd_node *));
-
-
-    mult_teststate_t *teststate_cov3 = calloc(1, sizeof(mult_teststate_t));
-    teststate_cov3->shd_A = malloc(sizeof(shd_t));
-    teststate_cov3->matrix_A = &test_matrix_4;
-    teststate_cov3->coverage_ref = coverage_expected[3];
-
-    teststate_cov3->shd_A_ref = malloc(sizeof(shd_t));
-    teststate_cov3->shd_A_ref->shd_data = malloc(test_matrix_4.rows * sizeof(shd_node *));
-
+    /** 3 teststate **/
     shd_node *cov3_row0_A = NULL;
     shd_node *cov3_row1_A = NULL;
     shd_node *cov3_row2_A = NULL;
@@ -311,142 +297,126 @@ int main(void) {
 
     append_node(&cov3_row3_A, 2);
 
-    teststate_cov3->shd_A_ref->shd_data[0] = cov3_row0_A;
-    teststate_cov3->shd_A_ref->shd_data[1] = cov3_row1_A;
-    teststate_cov3->shd_A_ref->shd_data[2] = cov3_row2_A;
-    teststate_cov3->shd_A_ref->shd_data[3] = cov3_row3_A;
-    teststate_cov3->shd_A_ref->shd_data[4] = cov3_row4_A;
+    teststates[3]->shd_A_ref->shd_data[0] = cov3_row0_A;
+    teststates[3]->shd_A_ref->shd_data[1] = cov3_row1_A;
+    teststates[3]->shd_A_ref->shd_data[2] = cov3_row2_A;
+    teststates[3]->shd_A_ref->shd_data[3] = cov3_row3_A;
+    teststates[3]->shd_A_ref->shd_data[4] = cov3_row4_A;
 
-    mult_teststate_t *teststate_cov4 = calloc(1, sizeof(mult_teststate_t));
-    teststate_cov4->shd_A = malloc(sizeof(shd_t));
-    teststate_cov4->matrix_A = &test_matrix_5;
-    teststate_cov4->coverage_ref = coverage_expected[4];
+    /** 4 teststate **/
+    // empty shadow
 
-    teststate_cov4->shd_A_ref = malloc(sizeof(shd_t));
-    teststate_cov4->shd_A_ref->shd_data = malloc(test_matrix_5.rows * sizeof(shd_node *));
-    /**
-     * multiplication with shd data
-     */
-    mult_teststate_t *teststate_shd0 = calloc(1, sizeof(mult_teststate_t));
+    return teststates;
+}
 
-    teststate_shd0->matrix_A = &test_matrix_1A;
-    teststate_shd0->matrix_B = &test_matrix_1B;
-    teststate_shd0->shd_A_ref = malloc(sizeof(shd_t));
-    teststate_shd0->shd_B_ref = malloc(sizeof(shd_t));
+mult_teststate_t **
+get_mult_data(bool shd_flag, unsigned int cases_num, const matrix_t test_matrices[][2], matrix_t output_ref_matrices[],
+              const int results_ref[]) {
 
-    teststate_shd0->shd_A_ref->shd_data = malloc(test_matrix_1A.rows * sizeof(shd_node *));
-    shd_node *shd0_row0_A = NULL;
-    shd_node *shd0_row1_A = NULL;
-    shd_node *shd0_row2_A = NULL;
-    shd_node *shd0_row3_A = NULL;
+    mult_teststate_t **teststates = malloc(cases_num * sizeof(mult_teststate_t *));
 
-    append_node(&shd0_row0_A, 1);
+    for (int c = 0; c < cases_num; c++) {
 
-    append_node(&shd0_row2_A, 0);
-    append_node(&shd0_row2_A, 1);
-    append_node(&shd0_row2_A, 2);
+        teststates[c] = calloc(1, sizeof(mult_teststate_t));
+        teststates[c]->matrix_A = &test_matrices[c][0];
+        teststates[c]->matrix_B = &test_matrices[c][1];
+        teststates[c]->mult_result_ref = results_ref[c];
+        teststates[c]->matrix_C_ref = &output_ref_matrices[c];
 
-    append_node(&shd0_row3_A, 1);
-
-    teststate_shd0->shd_A_ref->shd_data[0] = shd0_row0_A;
-    teststate_shd0->shd_A_ref->shd_data[1] = shd0_row1_A;
-    teststate_shd0->shd_A_ref->shd_data[2] = shd0_row2_A;
-    teststate_shd0->shd_A_ref->shd_data[3] = shd0_row3_A;
-
-    teststate_shd0->shd_B_ref->shd_data = malloc(test_matrix_1B.rows * sizeof(shd_node *));
-    shd_node *shd0_row0_B = NULL;
-    shd_node *shd0_row1_B = NULL;
-    shd_node *shd0_row2_B = NULL;
-
-    append_node(&shd0_row0_B, 0);
-
-    append_node(&shd0_row2_B, 1);
-
-    teststate_shd0->shd_B_ref->shd_data[0] = shd0_row0_B;
-    teststate_shd0->shd_B_ref->shd_data[1] = shd0_row1_B;
-    teststate_shd0->shd_B_ref->shd_data[2] = shd0_row2_B;
-
-    teststate_shd0->mult_result_ref = mult_results_expected[0];
-    teststate_shd0->matrix_C_ref = &matrices_result_ref[0];
+        if (shd_flag) {
+            teststates[c]->shd_A_ref = malloc(sizeof(shd_t));
+            teststates[c]->shd_B_ref = malloc(sizeof(shd_t));
+            teststates[c]->shd_A_ref->shd_data = malloc(test_matrices[c][0].rows * sizeof(shd_node *));
+            teststates[c]->shd_B_ref->shd_data = malloc(test_matrices[c][1].rows * sizeof(shd_node *));
+        }
+    }
 
     /**
-     * multiplication naive data
+     *  manually fillup reference shd data contents
      */
-    mult_teststate_t *teststate_naive0 = calloc(1, sizeof(mult_teststate_t));
+    if (shd_flag) {
 
-    teststate_naive0->matrix_A = &test_matrix_1A;
-    teststate_naive0->matrix_B = &test_matrix_1B;
-    teststate_naive0->mult_result_ref = mult_results_expected[0];
-    teststate_naive0->matrix_C_ref = &matrices_result_ref[0];
+        /*************
+         * 0 teststate
+         **************/
 
-    /**
-     * multiplication consiscency data
-     */
-    mult_teststate_t *teststate_c0 = calloc(1, sizeof(mult_teststate_t));
+        /** A **/
+        shd_node *shd0_row0_A = NULL;
+        shd_node *shd0_row1_A = NULL;
+        shd_node *shd0_row2_A = NULL;
+        shd_node *shd0_row3_A = NULL;
 
-    teststate_c0->matrix_A = &test_matrix_1A;
-    teststate_c0->matrix_B = &test_matrix_1B;
-    teststate_c0->shd_A_ref = malloc(sizeof(shd_t));
-    teststate_c0->shd_B_ref = malloc(sizeof(shd_t));
+        append_node(&shd0_row0_A, 1);
 
-    teststate_c0->shd_A_ref->shd_data = malloc(test_matrix_1A.rows * sizeof(shd_node *));
-    shd_node *c0_row0_A = NULL;
-    shd_node *c0_row1_A = NULL;
-    shd_node *c0_row2_A = NULL;
-    shd_node *c0_row3_A = NULL;
+        append_node(&shd0_row2_A, 0);
+        append_node(&shd0_row2_A, 1);
+        append_node(&shd0_row2_A, 2);
 
-    append_node(&c0_row0_A, 1);
+        append_node(&shd0_row3_A, 1);
 
-    append_node(&c0_row2_A, 0);
-    append_node(&c0_row2_A, 1);
-    append_node(&c0_row2_A, 2);
+        teststates[0]->shd_A_ref->shd_data[0] = shd0_row0_A;
+        teststates[0]->shd_A_ref->shd_data[1] = shd0_row1_A;
+        teststates[0]->shd_A_ref->shd_data[2] = shd0_row2_A;
+        teststates[0]->shd_A_ref->shd_data[3] = shd0_row3_A;
 
-    append_node(&c0_row3_A, 1);
+        /** B **/
 
-    teststate_c0->shd_A_ref->shd_data[0] = c0_row0_A;
-    teststate_c0->shd_A_ref->shd_data[1] = c0_row1_A;
-    teststate_c0->shd_A_ref->shd_data[2] = c0_row2_A;
-    teststate_c0->shd_A_ref->shd_data[3] = c0_row3_A;
+        shd_node *shd0_row0_B = NULL;
+        shd_node *shd0_row1_B = NULL;
+        shd_node *shd0_row2_B = NULL;
 
-    teststate_c0->shd_B_ref->shd_data = malloc(test_matrix_1B.rows * sizeof(shd_node *));
-    shd_node *c0_row0_B = NULL;
-    shd_node *c0_row1_B = NULL;
-    shd_node *c0_row2_B = NULL;
+        append_node(&shd0_row0_B, 0);
 
-    append_node(&c0_row0_B, 0);
+        append_node(&shd0_row2_B, 1);
 
-    append_node(&c0_row2_B, 1);
+        teststates[0]->shd_B_ref->shd_data[0] = shd0_row0_B;
+        teststates[0]->shd_B_ref->shd_data[1] = shd0_row1_B;
+        teststates[0]->shd_B_ref->shd_data[2] = shd0_row2_B;
 
-    teststate_c0->shd_B_ref->shd_data[0] = c0_row0_B;
-    teststate_c0->shd_B_ref->shd_data[1] = c0_row1_B;
-    teststate_c0->shd_B_ref->shd_data[2] = c0_row2_B;
+    }
+    return teststates;
+}
 
-    teststate_c0->mult_result_ref = mult_results_expected[0];
-    teststate_c0->matrix_C_ref = &matrices_result_ref[0];
+int main(void) {
+    /** coverage and shd test data **/
+    mult_teststate_t **cov_shd_test_states = get_cov_shd_data(SINGLE_MATRICES_NUM, matrices, coverage_expected);
+    mult_teststate_t **mult_shd_test_states = get_mult_data(true, PAIR_MATRICES_NUM, matrices_to_mult,
+                                                            matrices_result_ref, mult_results_expected);
+    mult_teststate_t **mult_naive_test_states = get_mult_data(false, PAIR_MATRICES_NUM, matrices_to_mult,
+                                                              matrices_result_ref, mult_results_expected);
+    mult_teststate_t **mult_consiscency_test_states = get_mult_data(true, PAIR_MATRICES_NUM, matrices_to_mult,
+                                                                    matrices_result_ref, mult_results_expected);
 
     const struct CMUnitTest tests[] = {
 
             /** Coverage and shadow **/
             cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, test_setup, coverage_teardown,
-                                                     teststate_cov0),
+                                                     cov_shd_test_states[0]),
             cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, test_setup, coverage_teardown,
-                                                     teststate_cov1),
+                                                     cov_shd_test_states[1]),
             cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, test_setup, coverage_teardown,
-                                                     teststate_cov2),
+                                                     cov_shd_test_states[2]),
             cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, test_setup, coverage_teardown,
-                                                     teststate_cov3),
+                                                     cov_shd_test_states[3]),
             cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, test_setup, coverage_teardown,
-                                                     teststate_cov4),
+                                                     cov_shd_test_states[4]),
 
             /** Mult: naive and with shadow **/
             cmocka_unit_test_prestate_setup_teardown(check_multiplication_shd, test_setup, mult_shd_teardown,
-                                                     teststate_shd0),
+                                                     mult_shd_test_states[0]),
 
             cmocka_unit_test_prestate_setup_teardown(check_multiplication_naive, test_setup, mult_naive_teardown,
-                                                     teststate_naive0),
+                                                     mult_naive_test_states[0]),
             /** Consiscency mult check **/
             cmocka_unit_test_prestate_setup_teardown(check_multiplication_consiscency, test_setup,
-                                                     mult_consiscency_teardown, teststate_c0),
+                                                     mult_consiscency_teardown, mult_consiscency_test_states[0]),
     };
-    return cmocka_run_group_tests(tests, NULL, NULL);
+    int tests_res = cmocka_run_group_tests(tests, NULL, NULL);
+
+    free(cov_shd_test_states);
+    free(mult_shd_test_states);
+    free(mult_naive_test_states);
+    free(mult_consiscency_test_states);
+
+    return tests_res;
 }

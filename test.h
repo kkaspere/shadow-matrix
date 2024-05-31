@@ -22,7 +22,8 @@ typedef struct {
  * Data of single matrices for coverage and shadow results testing
  ******************************************************************/
 
-#define T_SINGLE_MATRICES_NUM 5
+#define SINGLE_MATRICES_NUM 5
+
 float data_1[] = {0, 4.4, 0,
                   0, 0, 0,
                   9.9, 3, 1.2,
@@ -58,15 +59,16 @@ const matrix_t test_matrix_3 = {rows_3, col_3, data_3};
 const matrix_t test_matrix_4 = {rows_4, col_4, data_4};
 const matrix_t test_matrix_5 = {rows_5, col_5, data_5};
 
-const matrix_t matrices[T_SINGLE_MATRICES_NUM] = {test_matrix_1, test_matrix_2,  test_matrix_3,  test_matrix_4, test_matrix_5};
-int coverage_expected[T_SINGLE_MATRICES_NUM] = {41, 50, -1, 12, -1};
+const matrix_t matrices[SINGLE_MATRICES_NUM] = {test_matrix_1, test_matrix_2,  test_matrix_3,  test_matrix_4, test_matrix_5};
+int coverage_expected[SINGLE_MATRICES_NUM] = {41, 50, -1, 12, -1};
 
 
 /***********************************************************
  * Data of pair matrices for matrix multiplication testing
  ***********************************************************/
 
-#define T_PAIR_MATRICES_NUM 2
+#define PAIR_MATRICES_NUM 1
+
 float data_1A[] = {0, 4.4, 0,
                   0, 0, 0,
                   9.9, 3, 1.2,
@@ -94,6 +96,6 @@ const matrix_t test_matrix_1A = {rows_1A, cols_1A, data_1A};
 const matrix_t test_matrix_1B = {rows_1B, cols_1B, data_1B};
 const matrix_t test_matrix_1C = {rows_1C, cols_1C, data_1C};
 
-matrix_t matrices_to_mult[T_PAIR_MATRICES_NUM][2] = {{test_matrix_1A, test_matrix_1B}, {test_matrix_1A, test_matrix_1B}};
-matrix_t matrices_result_ref[T_PAIR_MATRICES_NUM] = {test_matrix_1C, test_matrix_1C};
-int mult_results_expected[T_PAIR_MATRICES_NUM] = {0, 0};
+matrix_t matrices_to_mult[PAIR_MATRICES_NUM][2] = {{test_matrix_1A, test_matrix_1B}};
+matrix_t matrices_result_ref[PAIR_MATRICES_NUM] = {test_matrix_1C};
+int mult_results_expected[PAIR_MATRICES_NUM] = {0};
