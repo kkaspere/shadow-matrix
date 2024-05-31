@@ -1,7 +1,8 @@
 /**
- * Functions that solves matrices multiplication with shadow problem
+ * Functions and data structs for solving matrices multiplication with shadow problem purposes
  * @author: Karolina Kasperek
  */
+
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -73,9 +74,14 @@ int mult_matrix_with_shd(const matrix_t *A, const matrix_t *B, const shd_t *shdA
  ******************/
 
 /**
- * Helper function that prints out the matrix contents
+ * Helper function that prints out the matrix' contents
  */
 void print_matrix(const matrix_t A);
+
+/**
+ * Helper function that prints out the matrix' shadow
+ */
+void print_shadow(shd_t *shd_m, unsigned int rows_num);
 
 /**
  * Appends a new node to the linked list

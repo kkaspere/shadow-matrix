@@ -127,6 +127,18 @@ void print_matrix(const matrix_t A) {
     }
 }
 
+void print_shadow(shd_t *shd_m, unsigned int rows_num) {
+    for (int row = 0; row < rows_num; row++) {
+        shd_node *shd_node = shd_m->shd_data[row];
+        printf("row %d: ", row);
+        while (shd_node != NULL) {
+            printf("%d -> ", shd_node->col);
+            shd_node = shd_node->next;
+        }
+        printf("\n");
+    }
+}
+
 void append_node(shd_node **head_node, int data) {
     shd_node *new_node = (shd_node *) malloc(sizeof(shd_node));
     new_node->col = data;
