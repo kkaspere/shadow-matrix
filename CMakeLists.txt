@@ -7,12 +7,13 @@ set(PROJ_INCLUDE "./inc")
 add_executable(shadow_matrix ${SOURCES})
 target_include_directories(shadow_matrix PUBLIC ${PROJ_INCLUDE})
 
-#find_package(cmocka 1.1.0 REQUIRED)
+find_package(cmocka 1.1.0 REQUIRED)
 
 # testing binary
-set(TESTING_SOURCES src/matrix_shd.c test.c)
+set(TESTING_SOURCES src/matrix_shd.c test/src/test_utils.c test/test.c)
+set(TESTS_INCLUDE ./test/inc ./inc)
 add_executable(shadow_matrix_test ${TESTING_SOURCES})
-target_include_directories(shadow_matrix_test PUBLIC ${PROJ_INCLUDE})
+target_include_directories(shadow_matrix_test PUBLIC ${TESTS_INCLUDE})
 target_link_libraries(shadow_matrix_test PRIVATE cmocka)
 # enable testing functionality
 enable_testing()

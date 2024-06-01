@@ -5,25 +5,9 @@
 #define SINGLE_MATRICES_NUM 6
 #define PAIR_MATRICES_NUM 6
 
-typedef struct {
-    const matrix_t *matrix_A;     /** input matrix A (if test require only 1 input matrix, matrix A is used) **/
-    const matrix_t *matrix_B;     /** input matrix B **/
-
-    shd_t *shd_A;                 /** Matrix A calculated shadow **/
-    shd_t *shd_B;                 /** Matrix B calculated shadow **/
-    matrix_t *matrix_C_shd;       /** Product of matrix multiplication (C=AB) using shd func **/
-    matrix_t *matrix_C_naive;     /** Product of matrix multiplication (C=AB) using standard function **/
-
-    shd_t *shd_A_ref;             /** Matrix A reference shadow **/
-    shd_t *shd_B_ref;             /** Matrix B reference shadow **/
-    matrix_t *matrix_C_ref;      /** Reference product of matrix multiplication (C=AB) **/
-    int mult_result_ref;          /** Expected result of matrix multiplication **/
-    int coverage_ref;             /** Reference coverage of matrix A **/
-} mult_teststate_t;
-
 /******************************************************************
- * Data of single matrices for coverage and shadow results testing
- ******************************************************************/
+* Data of single matrices for coverage and shadow results testing
+******************************************************************/
 
 /** Matrix 0 **/
 float data_0[] = {0, 4.4, 0,
