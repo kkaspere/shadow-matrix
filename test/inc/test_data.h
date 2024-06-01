@@ -1,5 +1,16 @@
 /**
+ * Initialization of the data used as an input for tests.
+ *
+ * Single matrices are used in check_coverage_and_shd test
+ * and pair matrices are used in multiplication tests.
+ *
+ * Be careful when changing data values - for some tests there
+ * is a need to init the reference shadow. This mechanism isn't parameterized,
+ * it is manually done in get_cov_shd_data and get_mult_data functions (test_utils.h).
+ * So in case of changing matrices data - it has to be changed too.
+ *
  * @author: Karolina Kasperek
+ *
  */
 
 #define SINGLE_MATRICES_NUM 6

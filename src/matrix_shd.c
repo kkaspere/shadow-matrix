@@ -13,10 +13,19 @@ int matrix_getshd(const matrix_t *A, shd_t *shd) {
 
     /** Filling up the list for each row **/
     shd->shd_data = (shd_node **) malloc(A->rows * sizeof(shd_node *));
+
+    if (!shd->shd_data) {
+        printf("Could not allocate memory, exiting\n");
+        exit(2);
+    }
+
     for (int row = 0; row < A->rows; row++) {
         shd_node *list = NULL;
         for (int col = 0; col < A->cols; col++) {
             idx = row * A->cols + col;
+            // the author is aware that in real scenario there may be a necessity to check if
+            // A->data[idx] is different from 0 with the usage of some eps margin
+            // (due to floating point arithmetic accuracy)
             if (A->data[idx] != 0) {
                 nonzero_num += 1;
                 append_node(&list, col);
@@ -59,9 +68,16 @@ int mult_matrix_naive(const matrix_t *A, const matrix_t *B, matrix_t *C) {
     C->cols = B->cols;
     C->data = calloc(C->rows * C->cols, sizeof(float));
 
+    if (!C->data) {
+        printf("Could not allocate memory, exiting\n");
+        exit(2);
+    }
+
+    /** Calculating contents of output matrix from the formula **/
     for (int row = 0; row < C->rows; row++) {
         for (int col = 0; col < C->cols; col++) {
             for (int i = 0; i < A->cols; i++) {
+
                 idx_A = row * A->cols + i;
                 idx_B = i * B->cols + col;
                 idx_C = row * C->cols + col;
@@ -88,24 +104,37 @@ int mult_matrix_with_shd(const matrix_t *A, const matrix_t *B, const shd_t *shdA
     float val_A;            /** stores the currently using value from matrix A **/
     float val_B;            /** stores the currently using value from matrix B **/
 
-    shd_node *ptrA = NULL;  /** **/
-    shd_node *ptrB = NULL;  /** **/
+    shd_node *ptrA = NULL;  /** stores pointer to currently processing node of matrix' A shadow **/
+    shd_node *ptrB = NULL;  /** stores pointer to currently processing node of matrix' B shadow **/
 
     /** Initialize output matrix **/
     C->rows = A->rows;
     C->cols = B->cols;
     C->data = calloc(C->rows * C->cols, sizeof(float));
 
+    if (!C->data) {
+        printf("Could not allocate memory, exiting\n");
+        exit(2);
+    }
+
     for (int row = 0; row < A->rows; row++) {
-        /** Going through the list of each matrix A row
-         * (aka columns idx of non-zero elements) **/
+        /** Going through the shadow of each matrix A row
+         * (columns indexes of non-zero elements) **/
         ptrA = shdA->shd_data[row];
         while (ptrA != NULL) {
-            /** Going through the list of matrix B row which idx is
-             * corresponding to recent read column idx from matrix A **/
+            /** Going through the shadow of matrix B row corresponding to recent column idx from matrix A **/
             ptrB = shdB->shd_data[ptrA->col];
             while (ptrB != NULL) {
-                /** **/
+
+                /** Calculating output matrix contents in following way:
+                * we operate on (row, ptrB->col) element of the output matrix
+                * and adds to them the product of val_A and val_B, which are:
+                * val_A - (row, ptrA->col) element of A matrix
+                * val_B - (ptrA->col, ptrB->col) element of A matrix
+                *
+                * This approach actually do multiplication operations same as formula determines,
+                * but also necessary ones thanks to the shadow usage **/
+
                 idx_A = row * A->cols + ptrA->col;
                 idx_B = ptrA->col * B->cols + ptrB->col;
                 idx_C = row * C->cols + ptrB->col;
@@ -124,6 +153,7 @@ int mult_matrix_with_shd(const matrix_t *A, const matrix_t *B, const shd_t *shdA
 }
 
 void print_matrix(const matrix_t A) {
+
     for (int i = 0; i < A.rows; i++) {
         for (int j = 0; j < A.cols; j++)
             printf("%f ", A.data[i * A.cols + j]);
@@ -132,6 +162,7 @@ void print_matrix(const matrix_t A) {
 }
 
 void print_shadow(shd_t *shd_m, unsigned int rows_num) {
+
     for (int row = 0; row < rows_num; row++) {
         shd_node *shd_node = shd_m->shd_data[row];
         printf("row %d: ", row);
@@ -144,13 +175,19 @@ void print_shadow(shd_t *shd_m, unsigned int rows_num) {
 }
 
 void append_node(shd_node **head_node, int data) {
+
     shd_node *new_node = (shd_node *) malloc(sizeof(shd_node));
+    if (!new_node) {
+        printf("Could not allocate memory, exiting\n");
+        exit(2);
+    }
     new_node->col = data;
     new_node->next = *head_node;
     *head_node = new_node;
 }
 
 void free_list(shd_node *head_node) {
+
     shd_node *head_tmp;
     while (head_node != NULL) {
         head_tmp = head_node;

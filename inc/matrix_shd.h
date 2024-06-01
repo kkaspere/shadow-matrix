@@ -1,5 +1,6 @@
 /**
  * Functions and data structs for solving matrices multiplication with shadow problem purposes
+ *
  * @author: Karolina Kasperek
  */
 

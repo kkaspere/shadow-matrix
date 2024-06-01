@@ -1,8 +1,12 @@
+/**
+ * @author: Karolina Kasperek
+ */
+
 #include "test_utils.h"
 
 mult_teststate_t **get_cov_shd_data(unsigned int cases_num, const matrix_t test_matrices[], const int coverage_ref[]) {
 
-    mult_teststate_t **teststates = malloc(cases_num * sizeof(mult_teststate_t *));
+    mult_teststate_t **teststates = malloc(cases_num * sizeof(mult_teststate_t * ));
 
     for (int c = 0; c < cases_num; c++) {
         teststates[c] = calloc(1, sizeof(mult_teststate_t));
@@ -10,7 +14,7 @@ mult_teststate_t **get_cov_shd_data(unsigned int cases_num, const matrix_t test_
         teststates[c]->matrix_A = &test_matrices[c];
         teststates[c]->coverage_ref = coverage_ref[c];
         teststates[c]->shd_A_ref = malloc(sizeof(shd_t));
-        teststates[c]->shd_A_ref->shd_data = malloc(test_matrices[c].rows * sizeof(shd_node *));
+        teststates[c]->shd_A_ref->shd_data = malloc(test_matrices[c].rows * sizeof(shd_node * ));
     }
 
     /**
@@ -95,7 +99,7 @@ mult_teststate_t **
 get_mult_data(bool shd_flag, unsigned int cases_num, const matrix_t test_matrices[][2], matrix_t output_ref_matrices[],
               const int results_ref[]) {
 
-    mult_teststate_t **teststates = malloc(cases_num * sizeof(mult_teststate_t *));
+    mult_teststate_t **teststates = malloc(cases_num * sizeof(mult_teststate_t * ));
 
     for (int c = 0; c < cases_num; c++) {
 
@@ -108,8 +112,8 @@ get_mult_data(bool shd_flag, unsigned int cases_num, const matrix_t test_matrice
         if (shd_flag) {
             teststates[c]->shd_A_ref = malloc(sizeof(shd_t));
             teststates[c]->shd_B_ref = malloc(sizeof(shd_t));
-            teststates[c]->shd_A_ref->shd_data = malloc(test_matrices[c][0].rows * sizeof(shd_node *));
-            teststates[c]->shd_B_ref->shd_data = malloc(test_matrices[c][1].rows * sizeof(shd_node *));
+            teststates[c]->shd_A_ref->shd_data = malloc(test_matrices[c][0].rows * sizeof(shd_node * ));
+            teststates[c]->shd_B_ref->shd_data = malloc(test_matrices[c][1].rows * sizeof(shd_node * ));
         }
     }
 
