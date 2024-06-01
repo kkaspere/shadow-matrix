@@ -32,10 +32,26 @@ row3:
 
 ### Algorytm mnożenia z wykorzystaniem cienia
 
-TODO
+Zaimplementowany algorytm wykorzystujący zaproponowaną postać opisu cienia macierzy jest następujący:
+
+```markdown
+for r in matrix_rows_num do
+    list_A <- shd_A(r) // take the list of row r
+    foreach list_A element do
+        c_A <- column of current list_A element
+        list_B <-shd_B(c_A) // take the list of row c_A
+
+        foreach list_B element do
+            c_B <- column of current list_B element
+            C(r, c_B) += A(r, c_A) * B(c_A, c_B) // convention: A(row, column)
+        end
+
+    end
+end for
+```
 
 W tym podejściu w zasadzie wykonuje się dokładnie te same mnożenia, które wynikają ze wzoru.
-Różnica polega na tym, że wykonywane są jedynie te niezbędne, czyli te, które nie dają w wyniku 0.
+Różnica polega na tym, że dzięki wykorzystaniu cienia macierzy, wykonywane są jedynie te niezbędne, czyli te, które nie dają w wyniku 0.
 Pozwala to znacząco zminimalizować liczbę mnożeń.
 
 ### Algorytm mnożenia bez cienia
