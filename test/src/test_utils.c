@@ -8,13 +8,25 @@ mult_teststate_t **get_cov_shd_data(unsigned int cases_num, const matrix_t test_
 
     mult_teststate_t **teststates = malloc(cases_num * sizeof(mult_teststate_t * ));
 
+    if (!teststates) {
+        printf("Could not allocate memory, exiting\n");
+        exit(2);
+    }
+
     for (int c = 0; c < cases_num; c++) {
+
         teststates[c] = calloc(1, sizeof(mult_teststate_t));
         teststates[c]->shd_A = malloc(sizeof(shd_t));
         teststates[c]->matrix_A = &test_matrices[c];
         teststates[c]->coverage_ref = coverage_ref[c];
         teststates[c]->shd_A_ref = malloc(sizeof(shd_t));
         teststates[c]->shd_A_ref->shd_data = malloc(test_matrices[c].rows * sizeof(shd_node * ));
+
+        if (!teststates[c] || !teststates[c]->shd_A || !teststates[c]->shd_A_ref ||
+            !teststates[c]->shd_A_ref->shd_data) {
+            printf("Could not allocate memory, exiting\n");
+            exit(2);
+        }
     }
 
     /**
@@ -109,11 +121,23 @@ get_mult_data(bool shd_flag, unsigned int cases_num, const matrix_t test_matrice
         teststates[c]->mult_result_ref = results_ref[c];
         teststates[c]->matrix_C_ref = &output_ref_matrices[c];
 
+        if (!teststates[c]) {
+            printf("Could not allocate memory, exiting\n");
+            exit(2);
+        }
+
         if (shd_flag) {
+
             teststates[c]->shd_A_ref = malloc(sizeof(shd_t));
             teststates[c]->shd_B_ref = malloc(sizeof(shd_t));
             teststates[c]->shd_A_ref->shd_data = malloc(test_matrices[c][0].rows * sizeof(shd_node * ));
             teststates[c]->shd_B_ref->shd_data = malloc(test_matrices[c][1].rows * sizeof(shd_node * ));
+
+            if (!teststates[c]->shd_A_ref || !teststates[c]->shd_B_ref || !teststates[c]->shd_A_ref->shd_data ||
+                !teststates[c]->shd_B_ref->shd_data) {
+                printf("Could not allocate memory, exiting\n");
+                exit(2);
+            }
         }
     }
 

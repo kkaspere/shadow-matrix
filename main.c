@@ -29,6 +29,11 @@ int main(void) {
     shd_t *shd_A = (shd_t *) malloc(sizeof(shd_t));
     shd_t *shd_B = (shd_t *) malloc(sizeof(shd_t));
 
+    if (!output_matrix || !shd_A || !shd_B) {
+        printf("Could not allocate memory, exiting\n");
+        exit(2);
+    }
+
     int coverageA = matrix_getshd(&test_matrix_A, shd_A);
     int coverageB = matrix_getshd(&test_matrix_B, shd_B);
     int mult_res = matrix_prodshd(&test_matrix_A, &test_matrix_B, shd_A, shd_B, output_matrix);
