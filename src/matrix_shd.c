@@ -45,8 +45,10 @@ int matrix_prodshd(const matrix_t *A, const matrix_t *B, const shd_t *shdA, cons
 int mult_matrix_naive(const matrix_t *A, const matrix_t *B, matrix_t *C) {
 
     /** checking if matrix dim are compatible **/
-    if (A->cols != B->rows)
+    if (A->cols != B->rows) {
+        C->data = NULL;
         return -1;
+    }
 
     unsigned int idx_A;     /** stores index of currently using element from matrix A **/
     unsigned int idx_B;     /** stores index of currently using element from matrix B **/
@@ -74,8 +76,10 @@ int mult_matrix_naive(const matrix_t *A, const matrix_t *B, matrix_t *C) {
 int mult_matrix_with_shd(const matrix_t *A, const matrix_t *B, const shd_t *shdA, const shd_t *shdB, matrix_t *C) {
 
     /** checking if matrix dim are compatible **/
-    if (A->cols != B->rows)
+    if (A->cols != B->rows) {
+        C->data = NULL;
         return -1;
+    }
 
     unsigned int idx_A;     /** stores index of currently using element from matrix A **/
     unsigned int idx_B;     /** stores index of currently using element from matrix B **/
