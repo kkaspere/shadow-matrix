@@ -17,7 +17,7 @@ int matrix_getshd(const matrix_t *A, shd_t *shd) {
         shd_node *list = NULL;
         for (int col = 0; col < A->cols; col++) {
             idx = row * A->cols + col;
-            if (A->data[idx] > 0) {
+            if (A->data[idx] != 0) {
                 nonzero_num += 1;
                 append_node(&list, col);
             }
