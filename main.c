@@ -30,13 +30,57 @@ int main(void) {
     shd_t *shd_B = (shd_t *) malloc(sizeof(shd_t));
 
     if (!output_matrix || !shd_A || !shd_B) {
+        /** If some mem allocate properly - deallocate **/
+        free(output_matrix);
+        free(shd_A);
+        free(shd_B);
         printf("Could not allocate memory, exiting\n");
         exit(2);
     }
 
     int coverageA = matrix_getshd(&test_matrix_A, shd_A);
     int coverageB = matrix_getshd(&test_matrix_B, shd_B);
+
+    if (coverageA == -2 || coverageB == -2) {
+        printf("Problem with mem allocation occurred, exiting\n");
+        if (shd_A->shd_data) {
+            for (int row = 0; row < test_matrix_A.rows; ++row)
+                free_list(shd_A->shd_data[row]);
+            free(shd_A->shd_data);
+        }
+        free(shd_A);
+
+        if (shd_B->shd_data) {
+            for (int row = 0; row < test_matrix_B.rows; ++row)
+                free_list(shd_B->shd_data[row]);
+            free(shd_B->shd_data);
+        }
+        free(shd_B);
+
+        free(output_matrix);
+        exit(2);
+    }
+
     int mult_res = matrix_prodshd(&test_matrix_A, &test_matrix_B, shd_A, shd_B, output_matrix);
+
+    if (mult_res == -1) {
+        printf("Could not mult matrices, exiting\n");
+        if (shd_A->shd_data) {
+            for (int row = 0; row < test_matrix_A.rows; ++row)
+                free_list(shd_A->shd_data[row]);
+            free(shd_A->shd_data);
+        }
+        free(shd_A);
+
+        if (shd_B->shd_data) {
+            for (int row = 0; row < test_matrix_B.rows; ++row)
+                free_list(shd_B->shd_data[row]);
+            free(shd_B->shd_data);
+        }
+        free(shd_B);
+        free(output_matrix);
+        exit(2);
+    }
 
     /** Show output **/
     printf("Matrix multiplication with shadow demo program\n");

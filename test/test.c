@@ -260,77 +260,98 @@ static int mult_consiscency_teardown(void **state) {
 int main(void) {
     /** coverage and shd test data **/
     mult_teststate_t **cov_shd_test_states = get_cov_shd_data(SINGLE_MATRICES_NUM, matrices, coverage_expected);
+
     mult_teststate_t **mult_shd_test_states = get_mult_data(true, PAIR_MATRICES_NUM, matrices_to_mult,
                                                             matrices_result_ref, mult_results_expected);
     mult_teststate_t **mult_naive_test_states = get_mult_data(false, PAIR_MATRICES_NUM, matrices_to_mult,
                                                               matrices_result_ref, mult_results_expected);
     mult_teststate_t **mult_consiscency_test_states = get_mult_data(true, PAIR_MATRICES_NUM, matrices_to_mult,
                                                                     matrices_result_ref, mult_results_expected);
+    int tests_res;
 
-    const struct CMUnitTest tests[] = {
+    /** Checks if tests' prestates allocated properly **/
+    bool mem_allocated_flag =
+            cov_shd_test_states && mult_shd_test_states && mult_naive_test_states && mult_consiscency_test_states;
 
-            /** Coverage and shadow **/
-            cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, NULL, coverage_and_shd_teardown,
-                                                     cov_shd_test_states[0]),
-            cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, NULL, coverage_and_shd_teardown,
-                                                     cov_shd_test_states[1]),
-            cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, NULL, coverage_and_shd_teardown,
-                                                     cov_shd_test_states[2]),
-            cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, NULL, coverage_and_shd_teardown,
-                                                     cov_shd_test_states[3]),
-            cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, NULL, coverage_and_shd_teardown,
-                                                     cov_shd_test_states[4]),
-            cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, NULL, coverage_and_shd_teardown,
-                                                     cov_shd_test_states[5]),
+    if (mem_allocated_flag) {
+        const struct CMUnitTest tests[] = {
 
-            /** Mult: naive and with shadow **/
-            cmocka_unit_test_prestate_setup_teardown(check_multiplication_shd, NULL, mult_shd_teardown,
-                                                     mult_shd_test_states[0]),
-            cmocka_unit_test_prestate_setup_teardown(check_multiplication_shd, NULL, mult_shd_teardown,
-                                                     mult_shd_test_states[1]),
-            cmocka_unit_test_prestate_setup_teardown(check_multiplication_shd, NULL, mult_shd_teardown,
-                                                     mult_shd_test_states[2]),
-            cmocka_unit_test_prestate_setup_teardown(check_multiplication_shd, NULL, mult_shd_teardown,
-                                                     mult_shd_test_states[3]),
-            cmocka_unit_test_prestate_setup_teardown(check_multiplication_shd, NULL, mult_shd_teardown,
-                                                     mult_shd_test_states[4]),
-            cmocka_unit_test_prestate_setup_teardown(check_multiplication_shd, NULL, mult_shd_teardown,
-                                                     mult_shd_test_states[5]),
+                /** Coverage and shadow **/
+                cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, NULL, coverage_and_shd_teardown,
+                                                         cov_shd_test_states[0]),
+                cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, NULL, coverage_and_shd_teardown,
+                                                         cov_shd_test_states[1]),
+                cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, NULL, coverage_and_shd_teardown,
+                                                         cov_shd_test_states[2]),
+                cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, NULL, coverage_and_shd_teardown,
+                                                         cov_shd_test_states[3]),
+                cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, NULL, coverage_and_shd_teardown,
+                                                         cov_shd_test_states[4]),
+                cmocka_unit_test_prestate_setup_teardown(check_coverage_and_shd, NULL, coverage_and_shd_teardown,
+                                                         cov_shd_test_states[5]),
 
-            cmocka_unit_test_prestate_setup_teardown(check_multiplication_naive, NULL, mult_naive_teardown,
-                                                     mult_naive_test_states[0]),
-            cmocka_unit_test_prestate_setup_teardown(check_multiplication_naive, NULL, mult_naive_teardown,
-                                                     mult_naive_test_states[1]),
-            cmocka_unit_test_prestate_setup_teardown(check_multiplication_naive, NULL, mult_naive_teardown,
-                                                     mult_naive_test_states[2]),
-            cmocka_unit_test_prestate_setup_teardown(check_multiplication_naive, NULL, mult_naive_teardown,
-                                                     mult_naive_test_states[3]),
-            cmocka_unit_test_prestate_setup_teardown(check_multiplication_naive, NULL, mult_naive_teardown,
-                                                     mult_naive_test_states[4]),
-            cmocka_unit_test_prestate_setup_teardown(check_multiplication_naive, NULL, mult_naive_teardown,
-                                                     mult_naive_test_states[5]),
-            /** Consiscency mult check **/
-            cmocka_unit_test_prestate_setup_teardown(check_multiplication_consiscency, NULL,
-                                                     mult_consiscency_teardown, mult_consiscency_test_states[0]),
-            cmocka_unit_test_prestate_setup_teardown(check_multiplication_consiscency, NULL,
-                                                     mult_consiscency_teardown, mult_consiscency_test_states[1]),
-            cmocka_unit_test_prestate_setup_teardown(check_multiplication_consiscency, NULL,
-                                                     mult_consiscency_teardown, mult_consiscency_test_states[2]),
-            cmocka_unit_test_prestate_setup_teardown(check_multiplication_consiscency, NULL,
-                                                     mult_consiscency_teardown, mult_consiscency_test_states[3]),
-            cmocka_unit_test_prestate_setup_teardown(check_multiplication_consiscency, NULL,
-                                                     mult_consiscency_teardown, mult_consiscency_test_states[4]),
-            cmocka_unit_test_prestate_setup_teardown(check_multiplication_consiscency, NULL,
-                                                     mult_consiscency_teardown, mult_consiscency_test_states[5]),
+                /** Mult: naive and with shadow **/
+                cmocka_unit_test_prestate_setup_teardown(check_multiplication_shd, NULL, mult_shd_teardown,
+                                                         mult_shd_test_states[0]),
+                cmocka_unit_test_prestate_setup_teardown(check_multiplication_shd, NULL, mult_shd_teardown,
+                                                         mult_shd_test_states[1]),
+                cmocka_unit_test_prestate_setup_teardown(check_multiplication_shd, NULL, mult_shd_teardown,
+                                                         mult_shd_test_states[2]),
+                cmocka_unit_test_prestate_setup_teardown(check_multiplication_shd, NULL, mult_shd_teardown,
+                                                         mult_shd_test_states[3]),
+                cmocka_unit_test_prestate_setup_teardown(check_multiplication_shd, NULL, mult_shd_teardown,
+                                                         mult_shd_test_states[4]),
+                cmocka_unit_test_prestate_setup_teardown(check_multiplication_shd, NULL, mult_shd_teardown,
+                                                         mult_shd_test_states[5]),
 
-    };
+                cmocka_unit_test_prestate_setup_teardown(check_multiplication_naive, NULL, mult_naive_teardown,
+                                                         mult_naive_test_states[0]),
+                cmocka_unit_test_prestate_setup_teardown(check_multiplication_naive, NULL, mult_naive_teardown,
+                                                         mult_naive_test_states[1]),
+                cmocka_unit_test_prestate_setup_teardown(check_multiplication_naive, NULL, mult_naive_teardown,
+                                                         mult_naive_test_states[2]),
+                cmocka_unit_test_prestate_setup_teardown(check_multiplication_naive, NULL, mult_naive_teardown,
+                                                         mult_naive_test_states[3]),
+                cmocka_unit_test_prestate_setup_teardown(check_multiplication_naive, NULL, mult_naive_teardown,
+                                                         mult_naive_test_states[4]),
+                cmocka_unit_test_prestate_setup_teardown(check_multiplication_naive, NULL, mult_naive_teardown,
+                                                         mult_naive_test_states[5]),
+                /** Consiscency mult check **/
+                cmocka_unit_test_prestate_setup_teardown(check_multiplication_consiscency, NULL,
+                                                         mult_consiscency_teardown, mult_consiscency_test_states[0]),
+                cmocka_unit_test_prestate_setup_teardown(check_multiplication_consiscency, NULL,
+                                                         mult_consiscency_teardown, mult_consiscency_test_states[1]),
+                cmocka_unit_test_prestate_setup_teardown(check_multiplication_consiscency, NULL,
+                                                         mult_consiscency_teardown, mult_consiscency_test_states[2]),
+                cmocka_unit_test_prestate_setup_teardown(check_multiplication_consiscency, NULL,
+                                                         mult_consiscency_teardown, mult_consiscency_test_states[3]),
+                cmocka_unit_test_prestate_setup_teardown(check_multiplication_consiscency, NULL,
+                                                         mult_consiscency_teardown, mult_consiscency_test_states[4]),
+                cmocka_unit_test_prestate_setup_teardown(check_multiplication_consiscency, NULL,
+                                                         mult_consiscency_teardown, mult_consiscency_test_states[5]),
 
-    int tests_res = cmocka_run_group_tests(tests, NULL, NULL);
+        };
+        tests_res = cmocka_run_group_tests(tests, NULL, NULL);
 
-    free(cov_shd_test_states);
-    free(mult_shd_test_states);
-    free(mult_naive_test_states);
-    free(mult_consiscency_test_states);
+        free(cov_shd_test_states);
+        free(mult_shd_test_states);
+        free(mult_naive_test_states);
+        free(mult_consiscency_test_states);
+
+    } else {
+        /** If some prestate allocate properly - deallocate **/
+        if (cov_shd_test_states)
+            free_cov_shd_teststates(SINGLE_MATRICES_NUM, cov_shd_test_states);
+        if (mult_shd_test_states)
+            free_mult_teststates(PAIR_MATRICES_NUM, mult_shd_test_states);
+        if (mult_naive_test_states)
+            free_mult_teststates(PAIR_MATRICES_NUM,mult_naive_test_states);
+        if (mult_consiscency_test_states)
+            free_mult_teststates(PAIR_MATRICES_NUM, mult_consiscency_test_states);
+
+        printf("Problem with mem allocation occurred, no tests were performed\n");
+        tests_res = 2;
+    }
 
     return tests_res;
 }

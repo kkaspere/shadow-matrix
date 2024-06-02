@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 /*********
  * structs
@@ -37,6 +38,8 @@ typedef struct {
  *
  * Returns percentage of zero-fields covered by the shadow (rounded down)
  * or -1 if coverage is extactly 0%.
+ *
+ * or -2 if couldn't allocate memory
  */
 int matrix_getshd(const matrix_t *A, shd_t *shd);
 
@@ -88,8 +91,11 @@ void print_shadow(shd_t *shd_m, unsigned int rows_num);
  * Appends a new node to the linked list
  * head_node - pointer to linked list head node
  * data - data of the new node
+ *
+ * Returns 0 if node was appended successfully
+ * Returns -1 if not
  */
-void append_node(shd_node **head_node, int data);
+int append_node(shd_node **head_node, int data);
 
 /**
  * Free the linked list
