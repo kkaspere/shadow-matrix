@@ -53,3 +53,25 @@ mult_teststate_t **get_cov_shd_data(unsigned int cases_num, const matrix_t test_
 mult_teststate_t **
 get_mult_data(bool shd_flag, unsigned int cases_num, const matrix_t test_matrices[][2], matrix_t output_ref_matrices[],
               const int results_ref[]);
+
+/**
+ * Free mem allocated for check_coverage_and_shd test
+ * Used in case when there was a problem with mem allocation
+ * (normally, when test run successfully, mem is deallocated in teardown func)
+ *
+ *  cases_num -  num of test cases
+ *  teststates - array of pointers to teststates (mult_teststate_t structs)
+ */
+void free_cov_shd_teststates(unsigned int cases_num, mult_teststate_t ** teststates);
+
+/**
+ * Free mem allocated for tests related to matrix multiplication
+ * (check_multiplication_shd, check_multiplication_naive, check_multiplication_consiscency)
+ *
+ * Used in case when there was a problem with mem allocation
+ * (normally, when test run successfully, mem is deallocated in teardown func)
+ *
+ *  cases_num -  num of test cases
+ *  teststates - array of pointers to teststates (mult_teststate_t structs)
+ */
+void free_mult_teststates(unsigned int cases_num, mult_teststate_t ** teststates);

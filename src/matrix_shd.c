@@ -10,29 +10,32 @@ int matrix_getshd(const matrix_t *A, shd_t *shd) {
     int coverage;                                        /** stores the matrix coverage (in %) **/
     unsigned int nonzero_num = 0;                        /** stores number of non-zero elements in matrix **/
     unsigned int idx;                                    /** stores index of currently processing element **/
+    bool mem_crashed_flag = false;
 
     /** Filling up the list for each row **/
     shd->shd_data = (shd_node **) malloc(A->rows * sizeof(shd_node *));
 
-    if (!shd->shd_data) {
-        printf("Could not allocate memory, exiting\n");
-        exit(2);
-    }
+    if (!shd->shd_data)
+       return -2;
 
-    for (int row = 0; row < A->rows; row++) {
+    for (int row = 0; row < A->rows; ++row) {
         shd_node *list = NULL;
-        for (int col = 0; col < A->cols; col++) {
+        for (int col = 0; col < A->cols; ++col) {
             idx = row * A->cols + col;
             // the author is aware that in real scenario there may be a necessity to check if
             // A->data[idx] is different from 0 with the usage of some eps margin
             // (due to floating point arithmetic accuracy)
             if (A->data[idx] != 0) {
                 nonzero_num += 1;
-                append_node(&list, col);
+                if (append_node(&list, col) == -1)
+                    mem_crashed_flag = true;
             }
-            shd->shd_data[row] = list;
         }
+        shd->shd_data[row] = list;
     }
+
+    if (mem_crashed_flag)
+        return -2;
 
     /** Coverage calculation **/
     if (nonzero_num == 0)
@@ -68,15 +71,13 @@ int mult_matrix_naive(const matrix_t *A, const matrix_t *B, matrix_t *C) {
     C->cols = B->cols;
     C->data = calloc(C->rows * C->cols, sizeof(float));
 
-    if (!C->data) {
-        printf("Could not allocate memory, exiting\n");
-        exit(2);
-    }
+    if (!C->data)
+        return -1;
 
     /** Calculating contents of output matrix from the formula **/
-    for (int row = 0; row < C->rows; row++) {
-        for (int col = 0; col < C->cols; col++) {
-            for (int i = 0; i < A->cols; i++) {
+    for (int row = 0; row < C->rows; ++row) {
+        for (int col = 0; col < C->cols; ++col) {
+            for (int i = 0; i < A->cols; ++i) {
 
                 idx_A = row * A->cols + i;
                 idx_B = i * B->cols + col;
@@ -112,12 +113,10 @@ int mult_matrix_with_shd(const matrix_t *A, const matrix_t *B, const shd_t *shdA
     C->cols = B->cols;
     C->data = calloc(C->rows * C->cols, sizeof(float));
 
-    if (!C->data) {
-        printf("Could not allocate memory, exiting\n");
-        exit(2);
-    }
+    if (!C->data)
+        return -1;
 
-    for (int row = 0; row < A->rows; row++) {
+    for (int row = 0; row < A->rows; ++row) {
         /** Going through the shadow of each matrix A row
          * (columns indexes of non-zero elements) **/
         ptrA = shdA->shd_data[row];
@@ -152,18 +151,18 @@ int mult_matrix_with_shd(const matrix_t *A, const matrix_t *B, const shd_t *shdA
     return 0;
 }
 
-void print_matrix(const matrix_t A) {
+void print_matrix(const matrix_t *A) {
 
-    for (int i = 0; i < A.rows; i++) {
-        for (int j = 0; j < A.cols; j++)
-            printf("%f ", A.data[i * A.cols + j]);
+    for (int i = 0; i < A->rows; ++i) {
+        for (int j = 0; j < A->cols; ++j)
+            printf("%f ", A->data[i * A->cols + j]);
         printf("\n");
     }
 }
 
 void print_shadow(shd_t *shd_m, unsigned int rows_num) {
 
-    for (int row = 0; row < rows_num; row++) {
+    for (int row = 0; row < rows_num; ++row) {
         shd_node *shd_node = shd_m->shd_data[row];
         printf("row %d: ", row);
         while (shd_node != NULL) {
@@ -174,16 +173,15 @@ void print_shadow(shd_t *shd_m, unsigned int rows_num) {
     }
 }
 
-void append_node(shd_node **head_node, int data) {
+int append_node(shd_node **head_node, int data) {
 
     shd_node *new_node = (shd_node *) malloc(sizeof(shd_node));
-    if (!new_node) {
-        printf("Could not allocate memory, exiting\n");
-        exit(2);
-    }
+    if (!new_node)
+        return -1;
     new_node->col = data;
     new_node->next = *head_node;
     *head_node = new_node;
+    return 0;
 }
 
 void free_list(shd_node *head_node) {
