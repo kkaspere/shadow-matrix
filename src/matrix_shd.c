@@ -152,11 +152,11 @@ int mult_matrix_with_shd(const matrix_t *A, const matrix_t *B, const shd_t *shdA
     return 0;
 }
 
-void print_matrix(const matrix_t A) {
+void print_matrix(const matrix_t *A) {
 
-    for (int i = 0; i < A.rows; i++) {
-        for (int j = 0; j < A.cols; j++)
-            printf("%f ", A.data[i * A.cols + j]);
+    for (int i = 0; i < A->rows; i++) {
+        for (int j = 0; j < A->cols; j++)
+            printf("%f ", A->data[i * A->cols + j]);
         printf("\n");
     }
 }

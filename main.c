@@ -42,7 +42,7 @@ int main(void) {
     printf("Matrix multiplication with shadow demo program\n");
     printf("===============================================\n");
     printf("matrix A:\n");
-    print_matrix(test_matrix_A);
+    print_matrix(&test_matrix_A);
     printf("\n");
     printf("A matrix coverage: %d%% \n\n", coverageA);
     printf("A matrix shadow:\n");
@@ -50,7 +50,7 @@ int main(void) {
     printf("\n");
 
     printf("matrix B:\n");
-    print_matrix(test_matrix_B);
+    print_matrix(&test_matrix_B);
     printf("\n");
     printf("B matrix coverage: %d%% \n\n", coverageB);
     printf("B matrix shadow:\n");
@@ -58,7 +58,7 @@ int main(void) {
     printf("\n");
 
     printf("C matrix (C=AB result):\n");
-    print_matrix(*output_matrix);
+    print_matrix(output_matrix);
     printf("\n");
     printf("Multiplication result: %d\n", mult_res);
 

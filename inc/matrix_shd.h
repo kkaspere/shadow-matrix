@@ -77,7 +77,7 @@ int mult_matrix_with_shd(const matrix_t *A, const matrix_t *B, const shd_t *shdA
 /**
  * Helper function that prints out the matrix' contents
  */
-void print_matrix(const matrix_t A);
+void print_matrix(const matrix_t *A);
 
 /**
  * Helper function that prints out the matrix' shadow
