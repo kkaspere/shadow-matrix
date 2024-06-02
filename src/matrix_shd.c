@@ -19,9 +19,9 @@ int matrix_getshd(const matrix_t *A, shd_t *shd) {
         exit(2);
     }
 
-    for (int row = 0; row < A->rows; row++) {
+    for (int row = 0; row < A->rows; ++row) {
         shd_node *list = NULL;
-        for (int col = 0; col < A->cols; col++) {
+        for (int col = 0; col < A->cols; ++col) {
             idx = row * A->cols + col;
             // the author is aware that in real scenario there may be a necessity to check if
             // A->data[idx] is different from 0 with the usage of some eps margin
@@ -74,9 +74,9 @@ int mult_matrix_naive(const matrix_t *A, const matrix_t *B, matrix_t *C) {
     }
 
     /** Calculating contents of output matrix from the formula **/
-    for (int row = 0; row < C->rows; row++) {
-        for (int col = 0; col < C->cols; col++) {
-            for (int i = 0; i < A->cols; i++) {
+    for (int row = 0; row < C->rows; ++row) {
+        for (int col = 0; col < C->cols; ++col) {
+            for (int i = 0; i < A->cols; ++i) {
 
                 idx_A = row * A->cols + i;
                 idx_B = i * B->cols + col;
@@ -117,7 +117,7 @@ int mult_matrix_with_shd(const matrix_t *A, const matrix_t *B, const shd_t *shdA
         exit(2);
     }
 
-    for (int row = 0; row < A->rows; row++) {
+    for (int row = 0; row < A->rows; ++row) {
         /** Going through the shadow of each matrix A row
          * (columns indexes of non-zero elements) **/
         ptrA = shdA->shd_data[row];
@@ -154,8 +154,8 @@ int mult_matrix_with_shd(const matrix_t *A, const matrix_t *B, const shd_t *shdA
 
 void print_matrix(const matrix_t *A) {
 
-    for (int i = 0; i < A->rows; i++) {
-        for (int j = 0; j < A->cols; j++)
+    for (int i = 0; i < A->rows; ++i) {
+        for (int j = 0; j < A->cols; ++j)
             printf("%f ", A->data[i * A->cols + j]);
         printf("\n");
     }
@@ -163,7 +163,7 @@ void print_matrix(const matrix_t *A) {
 
 void print_shadow(shd_t *shd_m, unsigned int rows_num) {
 
-    for (int row = 0; row < rows_num; row++) {
+    for (int row = 0; row < rows_num; ++row) {
         shd_node *shd_node = shd_m->shd_data[row];
         printf("row %d: ", row);
         while (shd_node != NULL) {

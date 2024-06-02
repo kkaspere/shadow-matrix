@@ -1,5 +1,5 @@
 /**
- * Program for demonstrating functionality of matrix multiplication with usage of shadow
+ * Program that demonstrates functionality of matrix multiplication with usage of shadow
  * @author: Karolina Kasperek
  */
 
@@ -66,13 +66,13 @@ int main(void) {
     free(output_matrix->data);
     free(output_matrix);
 
-    for (int row = 0; row < test_matrix_A.rows; row++)
+    for (int row = 0; row < test_matrix_A.rows; ++row)
         free_list(shd_A->shd_data[row]);
 
     free(shd_A->shd_data);
     free(shd_A);
 
-    for (int row = 0; row < test_matrix_B.rows; row++)
+    for (int row = 0; row < test_matrix_B.rows; ++row)
         free_list(shd_B->shd_data[row]);
 
     free(shd_B->shd_data);

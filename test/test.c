@@ -31,7 +31,7 @@ static void check_coverage_and_shd(void **state) {
     bool flag_found = false;
     /** In case of matrix has a positive coverage value, check shadow contents **/
     if (teststate->coverage_ref > 0) {
-        for (int row = 0; row < matrix_rows_num; row++) {
+        for (int row = 0; row < matrix_rows_num; ++row) {
 
             /** first element of the calculated linked list corresponding to currently checked row **/
             shd_calc_node = teststate->shd_A->shd_data[row];
@@ -84,8 +84,8 @@ static void check_multiplication_shd(void **state) {
         assert_int_equal(output_shd->rows, teststate->matrix_C_ref->rows);
         assert_int_equal(output_shd->cols, teststate->matrix_C_ref->cols);
 
-        for (int row = 0; row < output_shd->rows; row++) {
-            for (int col = 0; col < output_shd->cols; col++) {
+        for (int row = 0; row < output_shd->rows; ++row) {
+            for (int col = 0; col < output_shd->cols; ++col) {
                 assert_float_equal(output_shd->data[row * output_shd->cols + col],
                                    teststate->matrix_C_ref->data[row * C_ref_cols_num + col], 1e-6);
             }
@@ -116,8 +116,8 @@ static void check_multiplication_naive(void **state) {
         assert_int_equal(output_naive->rows, teststate->matrix_C_ref->rows);
         assert_int_equal(output_naive->cols, teststate->matrix_C_ref->cols);
 
-        for (int row = 0; row < output_naive->rows; row++) {
-            for (int col = 0; col < output_naive->cols; col++) {
+        for (int row = 0; row < output_naive->rows; ++row) {
+            for (int col = 0; col < output_naive->cols; ++col) {
                 assert_float_equal(output_naive->data[row * output_naive->cols + col],
                                    teststate->matrix_C_ref->data[row * C_ref_cols_num + col], 1e-6);
             }
@@ -155,8 +155,8 @@ static void check_multiplication_consiscency(void **state) {
         assert_int_equal(output_shd->rows, output_naive->rows);
         assert_int_equal(output_shd->cols, output_naive->cols);
 
-        for (int row = 0; row < output_rows_num; row++) {
-            for (int col = 0; col < output_cols_num; col++) {
+        for (int row = 0; row < output_rows_num; ++row) {
+            for (int col = 0; col < output_cols_num; ++col) {
                 assert_float_equal(output_shd->data[row * output_cols_num + col],
                                    output_naive->data[row * output_cols_num + col], 1e-6);
             }
@@ -175,7 +175,7 @@ static int coverage_and_shd_teardown(void **state) {
     shd_node *head;
     shd_node *head_tmp;
 
-    for (int row = 0; row < teststate->matrix_A->rows; row++) {
+    for (int row = 0; row < teststate->matrix_A->rows; ++row) {
         free_list(teststate->shd_A->shd_data[row]);
         free_list(teststate->shd_A_ref->shd_data[row]);
     }
@@ -198,10 +198,10 @@ static int mult_shd_teardown(void **state) {
     shd_node *head;
     shd_node *head_tmp;
 
-    for (int row = 0; row < teststate->matrix_A->rows; row++)
+    for (int row = 0; row < teststate->matrix_A->rows; ++row)
         free_list(teststate->shd_A_ref->shd_data[row]);
 
-    for (int row = 0; row < teststate->matrix_B->rows; row++)
+    for (int row = 0; row < teststate->matrix_B->rows; ++row)
         free_list(teststate->shd_B_ref->shd_data[row]);
 
     free(teststate->shd_A_ref->shd_data);
@@ -236,10 +236,10 @@ static int mult_consiscency_teardown(void **state) {
 
     mult_teststate_t *teststate = *state;
 
-    for (int row = 0; row < teststate->matrix_A->rows; row++)
+    for (int row = 0; row < teststate->matrix_A->rows; ++row)
         free_list(teststate->shd_A_ref->shd_data[row]);
 
-    for (int row = 0; row < teststate->matrix_B->rows; row++)
+    for (int row = 0; row < teststate->matrix_B->rows; ++row)
         free_list(teststate->shd_B_ref->shd_data[row]);
 
     free(teststate->shd_A_ref->shd_data);
