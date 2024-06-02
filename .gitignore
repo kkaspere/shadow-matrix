@@ -4,3 +4,5 @@ CMakeCache.txt
 bin/
 *.cmake
 Makefile
+Testing/
+*.cbp
